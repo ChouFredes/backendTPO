@@ -11,10 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import com.example.demo.Repositories.ProductoRepository;
+import com.example.demo.service.ProductoService;
+import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/productos")
@@ -23,9 +27,17 @@ public class ProductoController {
     @Autowired
     private ProductoRepository productoRepository;
 
+    @Autowired
+    private ProductoService ProductoService;
+
     @GetMapping
-    public List<Producto> getProductos() {
-        return productoRepository.findAll();
+    public ResponseEntity<Page<Producto>> getProductos(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        if (page == null || size == null) {
+            return ResponseEntity.ok(ProductoService.getProductos(PageRequest.of(0, Integer.MAX_VALUE)));
+        }
+        return ResponseEntity.ok(ProductoService.getProductos(PageRequest.of(page, size)));
     }
 
     @GetMapping("/categoria/{nombre}")
