@@ -5,7 +5,6 @@ import com.example.demo.Entities.OrderLine;
 import com.example.demo.Request.OrderLineRequest;
 import com.example.demo.exceptions.OrderLineDuplicateException;
 import com.example.demo.service.OrderLineService;
-import com.example.demo.service.OrderLineServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,26 +24,26 @@ public class OrderLineController {
     public ResponseEntity<Page<OrderLine>> getOrderLines(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-                if (page == null || size == null)
-                    return ResponseEntity.ok(orderLineService.getOrderLines(PageRequest.of(0,Integer.MAX_VALUE)));
-                return ResponseEntity.ok(orderLineService.getOrderLines(PageRequest.of(page,size)));
+        if (page == null || size == null)
+            return ResponseEntity.ok(orderLineService.getOrderLines(PageRequest.of(0, Integer.MAX_VALUE)));
+        return ResponseEntity.ok(orderLineService.getOrderLines(PageRequest.of(page, size)));
     }
 
     @GetMapping("/{orderLineId}")
-    public ResponseEntity<OrderLine> getOrderLineById (@PathVariable Long orderLineId){
+    public ResponseEntity<OrderLine> getOrderLineById(@PathVariable Long orderLineId) {
         Optional<OrderLine> result = orderLineService.getOrderLinesById(orderLineId);
-        if(result.isPresent())
+        if (result.isPresent())
             return ResponseEntity.ok(result.get());
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public ResponseEntity<Object> createOrderLine (@RequestBody OrderLineRequest orderLineRequest)
-        throws OrderLineDuplicateException{
+    public ResponseEntity<Object> createOrderLine(@RequestBody OrderLineRequest orderLineRequest)
+            throws OrderLineDuplicateException {
         OrderLine result = orderLineService.createOrderline(orderLineRequest.getProductId(),
-                                                            orderLineRequest.getOrderId(),
-                                                            orderLineRequest.getQty(),
-                                                            orderLineRequest.getPrice());
-        return ResponseEntity.created(URI.create("/categories/"+ result.getId())).body(result);
+                orderLineRequest.getOrderId(),
+                orderLineRequest.getQty(),
+                orderLineRequest.getPrice());
+        return ResponseEntity.created(URI.create("/categories/" + result.getId())).body(result);
     }
 }
